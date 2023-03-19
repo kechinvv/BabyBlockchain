@@ -1,0 +1,5 @@
+package valer
+
+
+class ApplicationTest {
+}
