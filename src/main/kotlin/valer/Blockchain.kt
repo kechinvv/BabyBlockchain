@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 object Blockchain {
     val chain = LinkedList<Block>()
-    var mode: NonceMode = NonceMode.INC
+    var mode = "0"
 
     private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
@@ -40,9 +40,9 @@ object Blockchain {
 
         private fun nextNonce(old_nonce: Int): Int {
             return when (mode) {
-                NonceMode.INC -> if (old_nonce < Int.MAX_VALUE) (old_nonce + 1) else Int.MIN_VALUE
-                NonceMode.DECR -> if (old_nonce > Int.MIN_VALUE) (old_nonce - 1) else Int.MAX_VALUE
-                NonceMode.RAND -> Random.nextInt()
+                "0" -> if (old_nonce < Int.MAX_VALUE) (old_nonce + 1) else Int.MIN_VALUE
+                "1" -> if (old_nonce > Int.MIN_VALUE) (old_nonce - 1) else Int.MAX_VALUE
+                else -> Random.nextInt()
             }
         }
 
@@ -104,6 +104,3 @@ object Blockchain {
 
 }
 
-enum class NonceMode(val mode: Int) {
-    INC(0), RAND(1), DECR(2)
-}

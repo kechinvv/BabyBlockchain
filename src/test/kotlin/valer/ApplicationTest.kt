@@ -24,4 +24,10 @@ class ApplicationTest {
             }
         }
     }
+
+    @Test
+    fun testNonceMode() {
+        Blockchain.mode = System.getenv("NONCE_MODE")
+        println(Blockchain.mode)
+    }
 }
