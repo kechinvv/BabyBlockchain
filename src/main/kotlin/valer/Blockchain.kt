@@ -2,6 +2,7 @@ package valer
 
 import com.google.common.hash.Hashing
 import kotlinx.coroutines.*
+import kotlinx.serialization.Serializable
 import java.lang.IllegalArgumentException
 import java.util.LinkedList
 import kotlin.random.Random
@@ -12,7 +13,7 @@ object Blockchain {
 
     private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-
+    @Serializable
     data class Block(
         val index: Int,
         val prev_hash: String,
@@ -28,6 +29,7 @@ object Blockchain {
                 hash = "1111"
             } else if (!verification()) throw IllegalArgumentException("Invalid block")
         }
+
 
         suspend fun setValidHash() {
             withContext(Dispatchers.Default) {
