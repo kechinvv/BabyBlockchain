@@ -87,6 +87,9 @@ object Blockchain {
 
     fun addBlockToChain(block: Block) {
         chain.add(block)
+        println("Block " + chain.last.index)
+        println("prev_hash = "  + chain.last.prev_hash)
+        println("hash = "  + chain.last.hash)
     }
 
     fun addBlockToChain(
