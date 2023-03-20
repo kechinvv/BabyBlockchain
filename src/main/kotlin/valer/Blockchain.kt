@@ -4,10 +4,14 @@ import com.google.common.hash.Hashing
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 import java.util.LinkedList
+import kotlin.random.Random
 
 object Blockchain {
     val chain = LinkedList<Block>()
+    var mode = "0"
+
     private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+
 
     data class Block(
         val index: Int,
@@ -29,8 +33,16 @@ object Blockchain {
             withContext(Dispatchers.Default) {
                 while (hash!!.takeLast(4) != "0000" && isActive) {
                     hash = calculateHash()
-                    nonce = nonce!! + 1
+                    nonce = nextNonce(nonce!!)
                 }
+            }
+        }
+
+        private fun nextNonce(old_nonce: Int): Int {
+            return when (mode) {
+                "0" -> if (old_nonce < Int.MAX_VALUE) (old_nonce + 1) else Int.MIN_VALUE
+                "1" -> if (old_nonce > Int.MIN_VALUE) (old_nonce - 1) else Int.MAX_VALUE
+                else -> Random.nextInt()
             }
         }
 
@@ -85,9 +97,10 @@ object Blockchain {
 
     private fun randomStr(): String {
         val randomString = (1..256)
-            .map { charPool[kotlin.random.Random.nextInt(0, charPool.size)] }
+            .map { charPool[Random.nextInt(0, charPool.size)] }
             .joinToString("");
         return randomString
     }
 
 }
+
