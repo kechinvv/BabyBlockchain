@@ -7,9 +7,10 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import valer.plugins.configureRouting
 
+var neighbors = emptyList<Int>()
 fun main() {
     Blockchain.mode = System.getenv("NONCE_MODE")
-    val neighbors = System.getenv("NEIGHBORS").split(",").mapNotNull { it.toIntOrNull() }
+    neighbors = System.getenv("NEIGHBORS").split(",").mapNotNull { it.toIntOrNull() }
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }

@@ -3,6 +3,7 @@ package valer
 import com.google.common.hash.Hashing
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
+import valer.Utils.randomStr
 import java.lang.IllegalArgumentException
 import java.util.LinkedList
 import kotlin.random.Random
@@ -11,7 +12,6 @@ object Blockchain {
     val chain = LinkedList<Block>()
     var mode = "0"
 
-    private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
     @Serializable
     data class Block(
@@ -96,13 +96,6 @@ object Blockchain {
         chain.add(block)
     }
 
-
-    private fun randomStr(): String {
-        val randomString = (1..256)
-            .map { charPool[Random.nextInt(0, charPool.size)] }
-            .joinToString("");
-        return randomString
-    }
 
 }
 
