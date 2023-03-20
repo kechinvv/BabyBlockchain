@@ -29,7 +29,6 @@ object Blockchain {
             withContext(Dispatchers.Default) {
                 while (hash!!.takeLast(4) != "0000" && isActive) {
                     hash = calculateHash()
-                    println(hash)
                     nonce = nonce!! + 1
                 }
             }
