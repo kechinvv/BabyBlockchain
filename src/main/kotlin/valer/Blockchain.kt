@@ -15,7 +15,7 @@ object Blockchain {
 
     @Serializable
     data class Block(
-        val index: Int,
+        var index: Int,
         val prev_hash: String,
         val data: String,
         var nonce: Int? = null,
@@ -34,8 +34,8 @@ object Blockchain {
         suspend fun setValidHash() {
             withContext(Dispatchers.Default) {
                 while (hash!!.takeLast(4) != "0000" && isActive) {
-                    hash = calculateHash()
                     nonce = nextNonce(nonce!!)
+                    hash = calculateHash()
                 }
             }
         }

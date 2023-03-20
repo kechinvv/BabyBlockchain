@@ -4,6 +4,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -42,27 +43,41 @@ class ApplicationTest {
         println(Blockchain.mode)
     }
 
+
     @Test
     fun testRoot() = testApplication {
         application {
             configureRouting()
         }
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
+
         val block = Blockchain.createBlock()
         println(block.hash)
         val response = client.post("/add_block") {
-            contentType(ContentType.Application.Json)
-            setBody(block)
+            setBody(MultiPartFormDataContent(
+                formData {
+                    append("index", block.index)
+                    append("prev_hash", block.prev_hash)
+                    append("data", block.data)
+                    append("nonce", block.nonce!!)
+                    append("hash", block.hash!!)
+                }
+            ))
         }
-        val data: String = response.bodyAsText()
-        println(data)
+        //        val response = khttp.post(
+//            "http://127.0.0.1:8080/add_block2",
+//            headers= mapOf("Content-Type" to "application/x-www-form-urlencoded"),
+//            data = mapOf(
+//                "index" to block.index,
+//                "prev_hash" to block.prev_hash,
+//                "data" to block.data,
+//                "nonce" to block.nonce,
+//                "hash" to block.hash
+//            )
+//        )
+        val mydata: String = response.bodyAsText()
+        println(mydata)
 
     }
-
 
 }
 

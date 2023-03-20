@@ -14,13 +14,23 @@ fun Application.configureRouting() {
             call.respondText("Hello World!")
         }
 
-        post("/add_block") {
-            val gson = Gson()
-            //val block = call.receive<Blockchain.Block>().hash
 
-            val blockJson = call.receiveText()
-            val block = gson.fromJson(blockJson, Blockchain.Block::class.java)
-            //println(block)
+        post("/add_block") {
+            try {
+                val params = call.receiveParameters()
+                val index = params["index"]!!.toInt()
+                val prev_hash = params["prev_hash"]
+                val data = params["data"]
+                val nonce = params["nonce"]!!.toInt()
+                val hash = params["hash"]
+                println("hash = $hash ; ")
+                val block = Blockchain.Block(index, prev_hash!!, data!!, nonce, hash)
+                Blockchain.addBlockToChain(block)
+                call.respondText("ok")
+            } catch (e: Exception) {
+                println(e)
+                call.respondText("er")
+            }
         }
     }
 }

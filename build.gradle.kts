@@ -19,6 +19,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jcenter.bintray.com/") }
 }
 
 dependencies {
@@ -39,4 +40,6 @@ dependencies {
 
     implementation("com.google.guava:guava:28.0-android")
     implementation ("com.google.code.gson:gson:2.9.0")
+
+    implementation("khttp:khttp:1.0.0")
 }
