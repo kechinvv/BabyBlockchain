@@ -33,11 +33,9 @@ fun Application.configureRouting() {
                 job = launch(Dispatchers.Default) {
                     while (isActive) {
                         val newBlock = Blockchain.createBlock()
-                        val res = Utils.distributeBlock(newBlock)
-                        if (res) {
-                            println("MyBlock")
-                            Blockchain.addBlockToChain(newBlock)
-                        }
+                        println("MyBlock")
+                        Blockchain.addBlockToChain(newBlock)
+                        Utils.distributeBlock(newBlock)
                     }
                 }
             } catch (e: Exception) {

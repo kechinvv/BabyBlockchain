@@ -20,8 +20,8 @@ fun main(): Unit = runBlocking {
         delay(1000)
         while (isActive) {
             val newBlock = Blockchain.createBlock()
-            val res = distributeBlock(newBlock)
-            if (res) Blockchain.addBlockToChain(newBlock)
+            Blockchain.addBlockToChain(newBlock)
+            distributeBlock(newBlock)
         }
     }
     embeddedServer(Netty, port = port, host = "0.0.0.0", module = Application::module)
