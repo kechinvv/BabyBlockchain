@@ -53,7 +53,7 @@ object Blockchain {
             var validIndex = index == 1
             if (chain.isNotEmpty()) {
                 hashActual = prev_hash == chain.last.hash
-                validIndex = (index + 1) == chain.last.index
+                validIndex = (index - 1) == chain.last.index
             }
             val validHash = (hash!!.takeLast(4) == "0000") && (hash == calculateHash())
             return hashActual && validHash && validIndex

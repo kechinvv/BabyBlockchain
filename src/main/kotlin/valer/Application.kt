@@ -17,6 +17,7 @@ fun main(): Unit = runBlocking {
     val port = System.getenv("PORT").toInt()
     val initNode = System.getenv("MASTER").toBoolean()
     if (initNode) job = launch(Dispatchers.Default) {
+        delay(1000)
         while (isActive) {
             val newBlock = Blockchain.createBlock()
             val res = distributeBlock(newBlock)

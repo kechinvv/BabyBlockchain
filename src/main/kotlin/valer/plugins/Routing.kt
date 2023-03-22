@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import valer.Blockchain
@@ -18,8 +19,8 @@ fun Application.configureRouting() {
 
 
         post("/add_block") {
+            val params = call.receiveParameters()
             try {
-                val params = call.receiveParameters()
                 val index = params["index"]!!.toInt()
                 val prev_hash = params["prev_hash"]
                 val data = params["data"]
@@ -29,15 +30,18 @@ fun Application.configureRouting() {
                 job?.cancel()
                 Blockchain.addBlockToChain(block)
                 call.respondText("ok")
-                job = launch {
+                job = launch(Dispatchers.Default) {
                     while (isActive) {
                         val newBlock = Blockchain.createBlock()
                         val res = Utils.distributeBlock(newBlock)
-                        if (res) Blockchain.addBlockToChain(newBlock)
+                        if (res) {
+                            println("MyBlock")
+                            Blockchain.addBlockToChain(newBlock)
+                        }
                     }
                 }
             } catch (e: Exception) {
-                println(e)
+                println(e.message)
                 call.respondText("er")
             }
         }

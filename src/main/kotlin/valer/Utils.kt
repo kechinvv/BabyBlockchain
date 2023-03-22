@@ -20,7 +20,7 @@ object Utils {
 
     suspend fun distributeBlock(block: Blockchain.Block): Boolean {
         for (port in neighbors) {
-            val response = client.post("/add_block") {
+            val response = client.post("http://127.0.0.1:$port/add_block") {
                 setBody(MultiPartFormDataContent(
                     formData {
                         append("index", block.index)
