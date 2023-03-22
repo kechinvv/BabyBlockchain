@@ -2,6 +2,8 @@ package valer
 
 import com.google.common.hash.Hashing
 import kotlinx.coroutines.*
+import kotlinx.serialization.Serializable
+import valer.Utils.randomStr
 import java.lang.IllegalArgumentException
 import java.util.LinkedList
 import kotlin.random.Random
@@ -10,11 +12,10 @@ object Blockchain {
     val chain = LinkedList<Block>()
     var mode = "0"
 
-    private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-
+    @Serializable
     data class Block(
-        val index: Int,
+        var index: Int,
         val prev_hash: String,
         val data: String,
         var nonce: Int? = null,
@@ -29,11 +30,12 @@ object Blockchain {
             } else if (!verification()) throw IllegalArgumentException("Invalid block")
         }
 
+
         suspend fun setValidHash() {
             withContext(Dispatchers.Default) {
                 while (hash!!.takeLast(4) != "0000" && isActive) {
-                    hash = calculateHash()
                     nonce = nextNonce(nonce!!)
+                    hash = calculateHash()
                 }
             }
         }
@@ -51,7 +53,7 @@ object Blockchain {
             var validIndex = index == 1
             if (chain.isNotEmpty()) {
                 hashActual = prev_hash == chain.last.hash
-                validIndex = (index + 1) == chain.last.index
+                validIndex = (index - 1) == chain.last.index
             }
             val validHash = (hash!!.takeLast(4) == "0000") && (hash == calculateHash())
             return hashActual && validHash && validIndex
@@ -85,6 +87,9 @@ object Blockchain {
 
     fun addBlockToChain(block: Block) {
         chain.add(block)
+        println("Block " + chain.last.index)
+        println("prev_hash = "  + chain.last.prev_hash)
+        println("hash = "  + chain.last.hash)
     }
 
     fun addBlockToChain(
@@ -94,13 +99,6 @@ object Blockchain {
         chain.add(block)
     }
 
-
-    private fun randomStr(): String {
-        val randomString = (1..256)
-            .map { charPool[Random.nextInt(0, charPool.size)] }
-            .joinToString("");
-        return randomString
-    }
 
 }
 
