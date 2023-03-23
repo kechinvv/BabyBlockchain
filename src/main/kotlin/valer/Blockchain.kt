@@ -9,7 +9,7 @@ import java.util.LinkedList
 import kotlin.random.Random
 
 object Blockchain {
-    val chain = LinkedList<Block>()
+    val chain = ArrayDeque<Block>()
     var mode = "0"
 
 
@@ -48,12 +48,12 @@ object Blockchain {
             }
         }
 
-        private fun verification(): Boolean {
+        fun verification(): Boolean {
             var hashActual = true
             var validIndex = index == 1
             if (chain.isNotEmpty()) {
-                hashActual = prev_hash == chain.last.hash
-                validIndex = (index - 1) == chain.last.index
+                hashActual = prev_hash == chain.last().hash
+                validIndex = (index - 1) == chain.last().index
             }
             val validHash = (hash!!.takeLast(4) == "0000") && (hash == calculateHash())
             return hashActual && validHash && validIndex
@@ -75,7 +75,7 @@ object Blockchain {
         val data = randomStr()
 
         if (chain.isNotEmpty()) {
-            val lastBlock = chain.last
+            val lastBlock = chain.last()
             index = lastBlock.index + 1
             prevHash = lastBlock.hash!!
         }
@@ -85,11 +85,19 @@ object Blockchain {
         return@withContext block
     }
 
+    suspend fun createAddDistribute() {
+        val newBlock = createBlock()
+        println("My block")
+        addBlockToChain(newBlock)
+        Utils.distributeBlock(newBlock)
+    }
+
     fun addBlockToChain(block: Block) {
+        if (!block.verification()) throw IllegalArgumentException("Invalid block")
         chain.add(block)
-        println("Block " + chain.last.index)
-        println("prev_hash = "  + chain.last.prev_hash)
-        println("hash = "  + chain.last.hash)
+        println("Block " + chain.last().index)
+        println("prev_hash = " + chain.last().prev_hash)
+        println("hash = " + chain.last().hash)
     }
 
     fun addBlockToChain(
