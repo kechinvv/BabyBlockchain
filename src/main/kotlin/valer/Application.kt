@@ -11,17 +11,21 @@ import valer.plugins.configureRouting
 
 var neighbors = emptyList<Int>()
 var myPort = 0
-var job: Job? = null
+var jobGenerator: Job? = null
+var jobCorrector: Job? = null
 fun main(): Unit = runBlocking {
     Blockchain.mode = System.getenv("NONCE_MODE") ?: "0"
     neighbors = System.getenv("NEIGHBORS").split(",").mapNotNull { it.toIntOrNull() }
     myPort = System.getenv("PORT").toInt()
     val initNode = System.getenv("MASTER").toBoolean()
-    if (initNode) job = launch(Dispatchers.Default) {
+    if (initNode) jobGenerator = launch(Dispatchers.Default) {
         delay(1000)
-        while (isActive) {
-            createAddDistribute()
-        }
+        while (isActive)
+            try {
+                createAddDistribute()
+            } catch (e: IllegalArgumentException) {
+                println(e.message)
+            }
     }
     embeddedServer(Netty, port = myPort, host = "0.0.0.0", module = Application::module)
         .start(wait = true)

@@ -63,6 +63,7 @@ object Utils {
                     }
                 }
             val blockText = response.bodyAsText()
+            println(blockText)
             val blockJson = Gson().fromJson(blockText, JsonObject::class.java)
             try {
                 if (curIndex == Blockchain.chain.last().index) Blockchain.chain.removeLast()
@@ -75,6 +76,7 @@ object Utils {
         }
         while (blockStack.isNotEmpty()) {
             val blockJson = blockStack.removeLast()
+            println("new block")
             Blockchain.addBlockToChain(jsonToBlock(blockJson))
         }
     }

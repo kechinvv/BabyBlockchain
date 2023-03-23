@@ -5,12 +5,11 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import valer.Blockchain
 import valer.Utils.correctingChain
-import valer.job
+import valer.jobCorrector
+import valer.jobGenerator
 
 fun Application.configureRouting() {
     routing {
@@ -19,12 +18,13 @@ fun Application.configureRouting() {
                 val index = call.request.queryParameters["index"]!!.toInt() - 1
                 call.respondText { Gson().toJson(Blockchain.chain[index]) }
             } catch (e: Exception) {
-                throw e
+                println(e.message)
             }
         }
 
 
         post("/add_block") {
+            if (jobCorrector?.isActive == true) return@post
             try {
                 val params = call.receiveParameters()
                 val index = params["index"]!!.toInt()
@@ -34,21 +34,27 @@ fun Application.configureRouting() {
                 val hash = params["hash"]
                 try {
                     val block = Blockchain.Block(index, prev_hash!!, data!!, nonce, hash)
-                    job?.cancel()
+                    jobGenerator?.cancel()
                     Blockchain.addBlockToChain(block)
                 } catch (e: IllegalArgumentException) {
-                    job?.cancel()
+                    jobGenerator?.cancel()
                     if (index > Blockchain.chain.last().index + 1) {
                         println("I am looser")
-                        correctingChain(params["port"]!!.toInt(), index)
-                        println("It is now my blocks")
-                        println(Blockchain.chain.size)
-                        println(job!!.isActive)
+                        if (jobCorrector?.isActive == true) return@post
+                        jobCorrector = launch(Dispatchers.Default) { correctingChain(params["port"]!!.toInt(), index) }
+                        runBlocking {
+                            jobCorrector?.join()
+                            println("It is now my blocks")
+                        }
                     }
                 } finally {
-                    job = launch(Dispatchers.Default) {
+                    jobGenerator = launch(Dispatchers.Default) {
                         while (isActive) {
-                            Blockchain.createAddDistribute()
+                            try {
+                                Blockchain.createAddDistribute()
+                            } catch (e: IllegalArgumentException) {
+                                println(e.message)
+                            }
                         }
                     }
                 }
