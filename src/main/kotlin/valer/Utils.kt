@@ -55,7 +55,8 @@ object Utils {
     suspend fun correctingChain(port: Int, lastIndex: Int) {
         var curIndex = lastIndex
         val blockStack = ArrayDeque<JsonObject>()
-        while (true) {
+        val tempChain = Blockchain.chain
+        while (curIndex > 1) {
             val response =
                 client.get("http://127.0.0.1:$port/get_block") {
                     url {
@@ -63,21 +64,32 @@ object Utils {
                     }
                 }
             val blockText = response.bodyAsText()
-            println(blockText)
             val blockJson = Gson().fromJson(blockText, JsonObject::class.java)
             try {
                 if (curIndex == Blockchain.chain.last().index) Blockchain.chain.removeLast()
                 Blockchain.addBlockToChain(jsonToBlock(blockJson))
                 break
-            } catch (e: IllegalArgumentException) {
-                blockStack.add(blockJson)
-                curIndex--
+            } catch (e: Exception) {
+                when (e) {
+                    is IllegalIndexException, is NotActualBlockException -> {
+                        blockStack.add(blockJson)
+                        curIndex--
+                    }
+
+                    else -> {
+                        Blockchain.chain = tempChain
+                        return
+                    }
+                }
             }
         }
-        while (blockStack.isNotEmpty()) {
-            val blockJson = blockStack.removeLast()
-            println("new block")
-            Blockchain.addBlockToChain(jsonToBlock(blockJson))
+        try {
+            while (blockStack.isNotEmpty()) {
+                val blockJson = blockStack.removeLast()
+                Blockchain.addBlockToChain(jsonToBlock(blockJson))
+            }
+        } catch (e: Exception) {
+            Blockchain.chain = tempChain
         }
     }
 }

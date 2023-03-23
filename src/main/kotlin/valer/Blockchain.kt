@@ -9,7 +9,7 @@ import java.util.LinkedList
 import kotlin.random.Random
 
 object Blockchain {
-    val chain = ArrayDeque<Block>()
+    var chain = ArrayDeque<Block>()
     var mode = "0"
 
 
@@ -27,7 +27,7 @@ object Blockchain {
             if (hash == null || nonce == null) {
                 nonce = 0
                 hash = "1111"
-            } else if (!verification()) throw IllegalArgumentException("Invalid block")
+            } else verification()
         }
 
 
@@ -48,7 +48,7 @@ object Blockchain {
             }
         }
 
-        fun verification(): Boolean {
+        fun verification() {
             var hashActual = true
             var validIndex = index == 1
             if (chain.isNotEmpty()) {
@@ -56,7 +56,9 @@ object Blockchain {
                 validIndex = (index - 1) == chain.last().index
             }
             val validHash = (hash!!.takeLast(4) == "0000") && (hash == calculateHash())
-            return hashActual && validHash && validIndex
+            if (!validHash) throw IllegalHashException()
+            if (!validIndex) throw IllegalIndexException()
+            if (!hashActual) throw NotActualBlockException()
         }
 
         private fun calculateHash(): String {
@@ -87,13 +89,12 @@ object Blockchain {
 
     suspend fun createAddDistribute() {
         val newBlock = createBlock()
-        println("My block")
         addBlockToChain(newBlock)
         Utils.distributeBlock(newBlock)
     }
 
     fun addBlockToChain(block: Block) {
-        if (!block.verification()) throw IllegalArgumentException("Invalid block")
+        block.verification()
         chain.add(block)
         println("Block " + chain.last().index)
         println("prev_hash = " + chain.last().prev_hash)
