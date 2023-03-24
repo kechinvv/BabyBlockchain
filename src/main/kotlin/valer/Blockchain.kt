@@ -11,6 +11,11 @@ import kotlin.random.Random
 object Blockchain {
     var chain = ArrayDeque<Block>()
     var mode = "0"
+    /* 0 - ++
+    *  1 - --
+    *  other - random
+    *
+    * */
 
 
     @Serializable

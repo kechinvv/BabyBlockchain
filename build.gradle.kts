@@ -42,4 +42,11 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.9.0")
 
     implementation("khttp:khttp:1.0.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+}
+
+tasks.test {
+    // Use the built-in JUnit support of Gradle.
+    useJUnitPlatform()
 }
