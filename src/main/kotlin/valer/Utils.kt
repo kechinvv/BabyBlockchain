@@ -25,19 +25,24 @@ object Utils {
     suspend fun distributeBlock(block: Blockchain.Block) = coroutineScope {
         for (port in neighbors) {
             async {
-                client.post("http://127.0.0.1:$port/add_block") {
-                    setBody(MultiPartFormDataContent(
-                        formData {
-                            append("index", block.index)
-                            append("prev_hash", block.prev_hash)
-                            append("data", block.data)
-                            append("nonce", block.nonce!!)
-                            append("hash", block.hash!!)
-                            append("port", myPort)
-                        }
-                    ))
+                try {
+                    client.post("http://127.0.0.1:$port/add_block") {
+                        setBody(MultiPartFormDataContent(
+                            formData {
+                                append("index", block.index)
+                                append("prev_hash", block.prev_hash)
+                                append("data", block.data)
+                                append("nonce", block.nonce!!)
+                                append("hash", block.hash!!)
+                                append("port", myPort)
+                            }
+                        ))
+                    }
+                } catch (e: Exception) {
+                    println(e)
                 }
             }
+
         }
     }
 
@@ -56,17 +61,19 @@ object Utils {
         var curIndex = lastIndex
         val blockStack = ArrayDeque<JsonObject>()
         val tempChain = Blockchain.chain
-        while (curIndex > 1) {
-            val response =
-                client.get("http://127.0.0.1:$port/get_block") {
-                    url {
-                        parameters.append("index", curIndex.toString())
-                    }
-                }
-            val blockText = response.bodyAsText()
-            val blockJson = Gson().fromJson(blockText, JsonObject::class.java)
+        lateinit var blockJson: JsonObject
+        while (curIndex >= 1) {
             try {
-                if (curIndex == Blockchain.chain.last().index) Blockchain.chain.removeLast()
+                val response =
+                    client.get("http://127.0.0.1:$port/get_block") {
+                        url {
+                            parameters.append("index", curIndex.toString())
+                        }
+                    }
+                val blockText = response.bodyAsText()
+                blockJson = Gson().fromJson(blockText, JsonObject::class.java)
+
+                if (Blockchain.chain.size != 0 && curIndex == Blockchain.chain.last().index) Blockchain.chain.removeLast()
                 Blockchain.addBlockToChain(jsonToBlock(blockJson))
                 break
             } catch (e: Exception) {
@@ -78,6 +85,7 @@ object Utils {
 
                     else -> {
                         Blockchain.chain = tempChain
+                        println(e)
                         return
                     }
                 }
@@ -85,7 +93,8 @@ object Utils {
         }
         try {
             while (blockStack.isNotEmpty()) {
-                val blockJson = blockStack.removeLast()
+                blockJson = blockStack.removeLast()
+                println("added")
                 Blockchain.addBlockToChain(jsonToBlock(blockJson))
             }
         } catch (e: Exception) {
