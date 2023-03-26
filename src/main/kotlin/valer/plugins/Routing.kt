@@ -47,7 +47,9 @@ fun Application.configureRouting() {
                     }
                 }
             } catch (e: IllegalIndexException) {
-                if (index <= Blockchain.chain.last().index + 1) return@post
+                if (Blockchain.chain.size > 0 && index <= Blockchain.chain.last().index + 1 ||
+                    Blockchain.chain.size == 0 && index <= 1
+                ) return@post
                 jobGenerator?.cancel()
                 if (jobCorrector?.isActive == true) return@post
                 jobCorrector = launch(Dispatchers.Default) { correctingChain(params["port"]!!.toInt(), index) }
