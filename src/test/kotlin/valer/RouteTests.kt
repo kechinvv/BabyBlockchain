@@ -45,6 +45,7 @@ class RouteTests {
                             append("data", block.data)
                             append("nonce", block.nonce!!)
                             append("hash", block.hash!!)
+                            append("port",  8080)
                         }
                     ))
                 }
@@ -73,6 +74,7 @@ class RouteTests {
                     append("data", block.data)
                     append("nonce", block.nonce!!)
                     append("hash", block.hash!!)
+                    append("port",  8080)
                 }
             ))
         }
@@ -87,6 +89,7 @@ class RouteTests {
                     append("data", block.data)
                     append("nonce", block.nonce!!)
                     append("hash", block.hash!!)
+                    append("port",  8080)
                 }
             ))
         }
