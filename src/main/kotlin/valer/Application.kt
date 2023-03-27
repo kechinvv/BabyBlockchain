@@ -9,13 +9,13 @@ import kotlinx.coroutines.*
 import valer.Blockchain.createAddDistribute
 import valer.plugins.configureRouting
 
-var neighbors = emptyList<Int>()
+var neighbors = emptyList<String>()
 var myPort = 0
 var jobGenerator: Job? = null
 var jobCorrector: Job? = null
 fun main(): Unit = runBlocking {
     Blockchain.mode = System.getenv("NONCE_MODE") ?: "0"
-    neighbors = System.getenv("NEIGHBORS").split(",").mapNotNull { it.toIntOrNull() }
+    neighbors = System.getenv("NEIGHBORS").split(",")
     myPort = System.getenv("PORT").toInt()
     val initNode = System.getenv("MASTER").toBoolean()
     if (initNode) jobGenerator = launch(Dispatchers.Default) {

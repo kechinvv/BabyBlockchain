@@ -23,10 +23,10 @@ object Utils {
     }
 
     suspend fun distributeBlock(block: Blockchain.Block) = coroutineScope {
-        for (port in neighbors) {
+        for (host in neighbors) {
             async {
                 try {
-                    client.post("http://127.0.0.1:$port/add_block") {
+                    client.post("http://$host/add_block") {
                         setBody(MultiPartFormDataContent(
                             formData {
                                 append("index", block.index)
@@ -57,7 +57,7 @@ object Utils {
         )
     }
 
-    suspend fun correctingChain(port: Int, lastIndex: Int) {
+    suspend fun correctingChain(host: String, port: Int, lastIndex: Int) {
         var curIndex = lastIndex
         val blockStack = ArrayDeque<JsonObject>()
         val tempChain = Blockchain.chain
@@ -65,7 +65,7 @@ object Utils {
         while (curIndex >= 1) {
             try {
                 val response =
-                    client.get("http://127.0.0.1:$port/get_block") {
+                    client.get("http://$host:$port/get_block") {
                         url {
                             parameters.append("index", curIndex.toString())
                         }

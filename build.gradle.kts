@@ -50,3 +50,17 @@ tasks.test {
     // Use the built-in JUnit support of Gradle.
     useJUnitPlatform()
 }
+
+tasks.create("MyFatJar", Jar::class) {
+    group = "my tasks" // OR, for example, "build"
+    description = "Creates a self-contained fat JAR of the application that can be run."
+    manifest.attributes["Main-Class"] = "valer.ApplicationKt"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    val dependencies = configurations
+        .runtimeClasspath
+        .get()
+        .map(::zipTree)
+    exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/INDEX.LIST")
+    from(dependencies)
+    with(tasks.jar.get())
+}

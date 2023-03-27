@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  node1:
+    image: baby-blockchain
+    container_name: node1
+    environment:
+      PORT: 8080
+      NEIGHBORS: node2:8081,node3:8082
+
+
+
+  node2:
+    image: baby-blockchain
+    container_name: node2
+    environment:
+      PORT: 8081
+      NEIGHBORS: node1:8080,node3:8082
+
+
+  node3:
+    image: baby-blockchain
+    container_name: node3
+    environment:
+      PORT: 8082
+      NEIGHBORS: node1:8080,node2:8081
+      MASTER: true
+    depends_on:
+      - node1
+      - node2
+
+
+
