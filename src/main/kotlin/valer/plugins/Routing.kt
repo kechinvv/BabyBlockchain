@@ -34,6 +34,7 @@ fun Application.configureRouting() {
             val data = params["data"]
             val nonce = params["nonce"]!!.toInt()
             val hash = params["hash"]
+            val port = params["port"]!!.toInt()
             try {
                 val block = Blockchain.Block(index, prevHash!!, data!!, nonce, hash)
                 jobGenerator?.cancel()
@@ -52,7 +53,7 @@ fun Application.configureRouting() {
                 ) return@post
                 jobGenerator?.cancel()
                 if (jobCorrector?.isActive == true) return@post
-                jobCorrector = launch(Dispatchers.Default) { correctingChain(params["port"]!!.toInt(), index) }
+                jobCorrector = launch(Dispatchers.Default) { correctingChain(call.request.local.remoteAddress, port, index) }
                 runBlocking {
                     jobCorrector?.join()
                     jobGenerator = launch(Dispatchers.Default) {
