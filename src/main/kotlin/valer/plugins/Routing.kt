@@ -6,11 +6,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.*
-import valer.Blockchain
-import valer.IllegalIndexException
+import valer.*
 import valer.Utils.correctingChain
-import valer.jobCorrector
-import valer.jobGenerator
 
 
 fun Application.configureRouting() {
@@ -47,9 +44,10 @@ fun Application.configureRouting() {
                         }
                     }
                 }
-            } catch (e: IllegalIndexException) {
-                if (Blockchain.chain.size > 0 && index <= Blockchain.chain.last().index + 1 ||
-                    Blockchain.chain.size == 0 && index <= 1
+            } catch (e: Exception) {
+                if (!(e is IllegalIndexException || e is IllegalHashException)) return@post
+                if (Blockchain.chain.size > 0 && index < Blockchain.chain.last().index + 1 ||
+                    Blockchain.chain.size == 0 && index != 1
                 ) return@post
                 jobGenerator?.cancel()
                 if (jobCorrector?.isActive == true) return@post
