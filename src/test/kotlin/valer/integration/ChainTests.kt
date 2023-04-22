@@ -1,12 +1,13 @@
-package valer
+package valer.integration
 
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.mockk.clearAllMocks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
+import valer.*
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertEquals
@@ -14,26 +15,24 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
-class BlockTests {
+class ChainTests {
     @BeforeEach
     fun clearChain() {
+        clearAllMocks()
         Blockchain.chain = ArrayDeque()
         Blockchain.mode = "0"
-
+        Utils.client = HttpClient(CIO)
+        neighbors = emptyList()
     }
 
 
     @Test
     fun testJobBlockCreating(): Unit = runBlocking {
         var block: Blockchain.Block? = null
-        launch {
+        val job = launch {
             block = Blockchain.createBlock()
         }
-        var i = 0
-        while (block == null && i < 16) {
-            i++
-            delay(100)
-        }
+        job.join()
         assertNotNull(block)
     }
 
@@ -131,30 +130,22 @@ class BlockTests {
 
     @Test
     fun testAddBlockToChain(): Unit = runBlocking {
-        var block = Blockchain.createBlock()
+        val block = Blockchain.createBlock()
         Blockchain.addBlockToChain(block)
         assertEquals(block, Blockchain.chain.last())
+    }
 
-        block = Blockchain.createBlock()
-        Blockchain.addBlockToChain(
-            block.index,
-            block.prev_hash,
-            block.data, block.nonce!!,
-            block.hash!!
-        )
-        assertEquals(block, Blockchain.chain.last())
-
-        block = Blockchain.createBlock()
-        assertThrows<IllegalHashException> {
-            Blockchain.addBlockToChain(
-                block.index-1,
-                block.prev_hash,
-                block.data, block.nonce!!,
-                block.hash!!
-            )
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun stopCor(): Unit {
+            runBlocking {
+                jobCorrector?.cancel()
+                jobCorrector?.join()
+                jobGenerator?.cancel()
+                jobGenerator?.join()
+            }
         }
-
-
     }
 }
 

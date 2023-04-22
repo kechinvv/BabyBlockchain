@@ -1,0 +1,292 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Utils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">valer</a>
+</div>
+
+<h1>Coverage Summary for Class: Utils (valer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Utils</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Utils$correctingChain$1</td>
+  </tr>
+  <tr>
+    <td class="name">Utils$correctingChain$response$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Utils$distributeBlock$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Utils$distributeBlock$2$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Utils$distributeBlock$2$1$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (61/61)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package valer
+&nbsp;
+&nbsp;import com.google.gson.Gson
+&nbsp;import com.google.gson.JsonObject
+&nbsp;import io.ktor.client.*
+&nbsp;import io.ktor.client.engine.cio.*
+&nbsp;import io.ktor.client.request.*
+&nbsp;import io.ktor.client.request.forms.*
+&nbsp;import io.ktor.client.statement.*
+&nbsp;import kotlinx.coroutines.async
+&nbsp;import kotlinx.coroutines.coroutineScope
+&nbsp;import kotlin.random.Random
+&nbsp;
+&nbsp;object Utils {
+<b class="fc">&nbsp;    private val charPool = (&#39;a&#39;..&#39;z&#39;) + (&#39;A&#39;..&#39;Z&#39;) + (&#39;0&#39;..&#39;9&#39;)</b>
+<b class="fc">&nbsp;    var client = HttpClient(CIO)</b>
+&nbsp;
+&nbsp;    fun randomStr(): String {
+<b class="fc">&nbsp;        val randomString = (1..256)</b>
+<b class="fc">&nbsp;            .map { charPool[Random.nextInt(0, charPool.size)] }</b>
+<b class="fc">&nbsp;            .joinToString(&quot;&quot;);</b>
+<b class="fc">&nbsp;        return randomString</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    suspend fun distributeBlock(block: Blockchain.Block) = coroutineScope {</b>
+<b class="fc">&nbsp;        for (host in neighbors) {</b>
+<b class="fc">&nbsp;            async {</b>
+<b class="fc">&nbsp;                try {</b>
+<b class="fc">&nbsp;                    client.post(&quot;http://$host/add_block&quot;) {</b>
+<b class="fc">&nbsp;                        setBody(MultiPartFormDataContent(</b>
+<b class="fc">&nbsp;                            formData {</b>
+<b class="fc">&nbsp;                                append(&quot;index&quot;, block.index)</b>
+<b class="fc">&nbsp;                                append(&quot;prev_hash&quot;, block.prev_hash)</b>
+<b class="fc">&nbsp;                                append(&quot;data&quot;, block.data)</b>
+<b class="fc">&nbsp;                                append(&quot;nonce&quot;, block.nonce!!)</b>
+<b class="fc">&nbsp;                                append(&quot;hash&quot;, block.hash!!)</b>
+<b class="fc">&nbsp;                                append(&quot;port&quot;, myPort)</b>
+&nbsp;                            }
+&nbsp;                        ))
+<b class="fc">&nbsp;                    }</b>
+<b class="fc">&nbsp;                } catch (e: Exception) {</b>
+<b class="fc">&nbsp;                    println(e)</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    fun jsonToBlock(json: JsonObject): Blockchain.Block {
+<b class="fc">&nbsp;        return Blockchain.Block(</b>
+<b class="fc">&nbsp;            json.get(&quot;index&quot;).asInt,</b>
+<b class="fc">&nbsp;            json.get(&quot;prev_hash&quot;).asString,</b>
+<b class="fc">&nbsp;            json.get(&quot;data&quot;).asString,</b>
+<b class="fc">&nbsp;            json.get(&quot;nonce&quot;).asInt,</b>
+<b class="fc">&nbsp;            json.get(&quot;hash&quot;).asString</b>
+&nbsp;        )
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    suspend fun correctingChain(host: String, port: Int, lastIndex: Int) {</b>
+<b class="fc">&nbsp;        var curIndex = lastIndex</b>
+<b class="fc">&nbsp;        val blockStack = ArrayDeque&lt;JsonObject&gt;()</b>
+<b class="fc">&nbsp;        val tempChain = Blockchain.chain</b>
+<b class="fc">&nbsp;        lateinit var blockJson: JsonObject</b>
+<b class="fc">&nbsp;        while (curIndex &gt;= 1) {</b>
+<b class="fc">&nbsp;            try {</b>
+<b class="fc">&nbsp;                val response =</b>
+<b class="fc">&nbsp;                    client.get(&quot;http://$host:$port/get_block&quot;) {</b>
+<b class="fc">&nbsp;                        url {</b>
+<b class="fc">&nbsp;                            parameters.append(&quot;index&quot;, curIndex.toString())</b>
+&nbsp;                        }
+<b class="fc">&nbsp;                    }</b>
+<b class="fc">&nbsp;                val blockText = response.bodyAsText()</b>
+<b class="fc">&nbsp;                blockJson = Gson().fromJson(blockText, JsonObject::class.java)</b>
+&nbsp;
+<b class="fc">&nbsp;                if (Blockchain.chain.size != 0 &amp;&amp; curIndex == Blockchain.chain.last().index) Blockchain.chain.removeLast()</b>
+<b class="fc">&nbsp;                Blockchain.addBlockToChain(jsonToBlock(blockJson))</b>
+<b class="fc">&nbsp;                break</b>
+<b class="fc">&nbsp;            } catch (e: Exception) {</b>
+<b class="fc">&nbsp;                when (e) {</b>
+<b class="fc">&nbsp;                    is IllegalIndexException, is NotActualBlockException -&gt; {</b>
+<b class="fc">&nbsp;                        blockStack.add(blockJson)</b>
+<b class="fc">&nbsp;                        curIndex--</b>
+&nbsp;                    }
+&nbsp;
+&nbsp;                    else -&gt; {
+<b class="fc">&nbsp;                        Blockchain.chain = tempChain</b>
+<b class="fc">&nbsp;                        println(e)</b>
+&nbsp;                        return
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        try {</b>
+<b class="fc">&nbsp;            while (blockStack.isNotEmpty()) {</b>
+<b class="fc">&nbsp;                blockJson = blockStack.removeLast()</b>
+<b class="fc">&nbsp;                println(&quot;added&quot;)</b>
+<b class="fc">&nbsp;                Blockchain.addBlockToChain(jsonToBlock(blockJson))</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (e: Exception) {</b>
+<b class="fc">&nbsp;            Blockchain.chain = tempChain</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-22 04:31</div>
+</div>
+</body>
+</html>

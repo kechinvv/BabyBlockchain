@@ -18,7 +18,6 @@ object Blockchain {
     * */
 
 
-    @Serializable
     data class Block(
         var index: Int,
         val prev_hash: String,
@@ -104,13 +103,6 @@ object Blockchain {
         println("Block " + chain.last().index)
         println("prev_hash = " + chain.last().prev_hash)
         println("hash = " + chain.last().hash)
-    }
-
-    fun addBlockToChain(
-        index: Int, prev_hash: String, data: String, nonce: Int, hash: String
-    ) {
-        val block = Block(index, prev_hash, data, nonce, hash)
-        chain.add(block)
     }
 
 

@@ -1,10 +1,8 @@
 package valer
 
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.*
 import valer.Blockchain.createAddDistribute
 import valer.plugins.configureRouting
@@ -32,8 +30,5 @@ fun main(): Unit = runBlocking {
 }
 
 fun Application.module() {
-    install(ContentNegotiation) {
-        json()
-    }
     configureRouting()
 }
