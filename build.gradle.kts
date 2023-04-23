@@ -55,6 +55,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
+
+    testImplementation("io.cucumber:cucumber-java:7.11.2")
+    testImplementation("io.cucumber:cucumber-junit:7.11.2")
 }
 
 tasks.test {
@@ -65,7 +68,7 @@ tasks.test {
     //maxHeapSize = "1024m"
     jvmArgs = listOf("-Xss1024m")
     useJUnitPlatform()
-
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
 }
 
 tasks.create("MyFatJar", Jar::class) {

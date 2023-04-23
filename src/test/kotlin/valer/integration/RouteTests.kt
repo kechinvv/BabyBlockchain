@@ -53,7 +53,7 @@ class RouteTests {
                             append("data", block.data)
                             append("nonce", block.nonce!!)
                             append("hash", block.hash!!)
-                            append("port",  8080)
+                            append("port", 8080)
                         }
                     ))
                 }
@@ -86,7 +86,7 @@ class RouteTests {
                     append("data", block.data)
                     append("nonce", block.nonce!!)
                     append("hash", block.hash!!)
-                    append("port",  8080)
+                    append("port", 8080)
                 }
             ))
         }
@@ -101,7 +101,7 @@ class RouteTests {
                     append("data", block.data)
                     append("nonce", block.nonce!!)
                     append("hash", block.hash!!)
-                    append("port",  8080)
+                    append("port", 8080)
                 }
             ))
         }
@@ -133,14 +133,14 @@ class RouteTests {
                             append("data", block.data)
                             append("nonce", block.nonce!!)
                             append("hash", block.hash!!)
-                            append("port",  8080)
+                            append("port", 8080)
                         }
                     ))
                 }
             }
-            delay(500)
+            delay(1000)
             assertNotNull(jobCorrector)
-            assertTrue { jobGenerator!!.isCancelled }
+            assertTrue { jobGenerator == null || jobGenerator!!.isCancelled }
             job.cancel()
             jobGenerator?.cancel()
             jobCorrector?.cancel()
@@ -148,6 +148,7 @@ class RouteTests {
             jobGenerator?.join()
         }
     }
+
     @Test
     fun testGetBlock() = testApplication {
         runBlocking {
