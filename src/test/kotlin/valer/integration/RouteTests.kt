@@ -140,7 +140,7 @@ class RouteTests {
             }
             delay(1000)
             assertNotNull(jobCorrector)
-            assertTrue { jobGenerator == null || jobGenerator!!.isCancelled }
+            assertTrue {  jobGenerator?.isCancelled ?: true}
             job.cancel()
             jobGenerator?.cancel()
             jobCorrector?.cancel()
