@@ -17,3 +17,9 @@ Getting an up-to-date chain if the current node is behind
 <p align="center">
 <img src="minority_fix.png" width="300">
 </p>
+## Tests
+
+- [unit](https://github.com/kechinvv/BabyBlockchain/tree/feature/master/src/test/kotlin/valer/unit)
+- [integration](https://github.com/kechinvv/BabyBlockchain/tree/feature/master/src/test/kotlin/valer/integration)
+- system - manual
+- [mutation](https://scans.gradle.com/s/kckhiidjm3sws)

@@ -6,7 +6,16 @@ plugins {
     kotlin("jvm") version "1.8.10"
     id("io.ktor.plugin") version "2.2.4"
     kotlin("plugin.serialization") version "1.8.10"
+    id("info.solidsoft.pitest") version "1.9.0"
 }
+
+configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
+    junit5PluginVersion.set("1.1.2")
+    avoidCallsTo.set(setOf("kotlin.jvm.internal"))
+    mutators.set(setOf("STRONGER"))
+    verbose.set(true)
+}
+
 
 group = "valer"
 version = "0.0.1"
@@ -21,6 +30,8 @@ repositories {
     mavenCentral()
     maven { url = uri("https://jcenter.bintray.com/") }
 }
+
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
@@ -70,3 +81,4 @@ tasks.create("MyFatJar", Jar::class) {
     from(dependencies)
     with(tasks.jar.get())
 }
+
