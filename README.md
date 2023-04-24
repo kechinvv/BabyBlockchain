@@ -17,6 +17,7 @@ Getting an up-to-date chain if the current node is behind
 <p align="center">
 <img src="minority_fix.png" width="300">
 </p>
+
 ## Tests
 
 - [unit](https://github.com/kechinvv/BabyBlockchain/tree/master/src/test/kotlin/valer/unit) with JUnit
@@ -25,6 +26,7 @@ Getting an up-to-date chain if the current node is behind
 - [e2e](https://github.com/kechinvv/BabyBlockchain/tree/master/src/test/kotlin/valer/e2e) with Cucumber
 - [load and stress](https://github.com/kechinvv/BabyBlockchain/tree/master/JMeter) with JMeter
 - [mutation](https://scans.gradle.com/s/kckhiidjm3sws) with pitest in STRONGER mode
+- [Static NPA](https://github.com/kechinvv/BabyBlockchain/tree/master/src/test/kotlin/valer/sootnp) with Soot
 
 ![coverage](coverage.png)
 

@@ -61,6 +61,8 @@ dependencies {
     testImplementation("uk.org.webcompere:system-stubs-jupiter:2.0.2")
     testImplementation("org.mockito:mockito-inline:3.12.4")
     testImplementation("uk.org.webcompere:system-stubs-core:2.0.2")
+
+    implementation("org.soot-oss:soot:4.2.1")
 }
 
 tasks.test {
@@ -86,5 +88,6 @@ tasks.create("MyFatJar", Jar::class) {
     exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/INDEX.LIST")
     from(dependencies)
     with(tasks.jar.get())
+    archiveBaseName.set("${project.name}-fat")
 }
 
