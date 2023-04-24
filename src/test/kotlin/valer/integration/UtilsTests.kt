@@ -27,12 +27,18 @@ import kotlin.test.assertNotEquals
 class UtilsTests {
 
     @BeforeEach
-    fun clearChain() {
+    fun clearChain() = runBlocking {
         clearAllMocks()
         Blockchain.chain = ArrayDeque()
         Blockchain.mode = "0"
         Utils.client = HttpClient(CIO)
         neighbors = emptyList()
+        jobCorrector?.cancel()
+        jobCorrector?.join()
+        jobGenerator?.cancel()
+        jobGenerator?.join()
+        jobGenerator = null
+        jobCorrector = null
     }
 
     @Test
@@ -153,16 +159,5 @@ class UtilsTests {
         assertEquals(expectedChain, Blockchain.chain)
     }
 
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun stopCor(): Unit {
-            runBlocking {
-                jobCorrector?.cancel()
-                jobCorrector?.join()
-                jobGenerator?.cancel()
-                jobGenerator?.join()
-            }
-        }
-    }
+
 }

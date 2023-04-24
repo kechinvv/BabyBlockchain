@@ -6,19 +6,25 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import valer.Blockchain
-import valer.Utils
+import valer.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ChainUnitTests {
 
     @BeforeEach
-    fun clearChain() {
+    fun clearChain() = runBlocking {
         clearAllMocks()
         Blockchain.chain = ArrayDeque()
         Blockchain.mode = "0"
         Utils.client = HttpClient(CIO)
+        neighbors = emptyList()
+        jobCorrector?.cancel()
+        jobCorrector?.join()
+        jobGenerator?.cancel()
+        jobGenerator?.join()
+        jobGenerator = null
+        jobCorrector = null
     }
 
     @Test

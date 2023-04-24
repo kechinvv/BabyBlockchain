@@ -20,12 +20,18 @@ import kotlin.test.assertEquals
 
 class UtilsUnitTests {
     @BeforeEach
-    fun clearChain() {
+    fun clearChain() = runBlocking {
         clearAllMocks()
         Blockchain.chain = ArrayDeque()
         Blockchain.mode = "0"
         Utils.client = HttpClient(CIO)
-
+        neighbors = emptyList()
+        jobCorrector?.cancel()
+        jobCorrector?.join()
+        jobGenerator?.cancel()
+        jobGenerator?.join()
+        jobGenerator = null
+        jobCorrector = null
     }
 
     @RepeatedTest(5)

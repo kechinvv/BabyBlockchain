@@ -58,6 +58,9 @@ dependencies {
 
     testImplementation("io.cucumber:cucumber-java:7.11.2")
     testImplementation("io.cucumber:cucumber-junit:7.11.2")
+    testImplementation("uk.org.webcompere:system-stubs-jupiter:2.0.2")
+    testImplementation("org.mockito:mockito-inline:3.12.4")
+    testImplementation("uk.org.webcompere:system-stubs-core:2.0.2")
 }
 
 tasks.test {

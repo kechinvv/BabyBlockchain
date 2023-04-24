@@ -28,12 +28,18 @@ import kotlin.test.assertTrue
 
 class RouteTests {
     @BeforeEach
-    fun clearChain() {
+    fun clearChain() = runBlocking {
         clearAllMocks()
         Blockchain.chain = ArrayDeque()
         Blockchain.mode = "0"
         Utils.client = HttpClient(CIO)
         neighbors = emptyList()
+        jobCorrector?.cancel()
+        jobCorrector?.join()
+        jobGenerator?.cancel()
+        jobGenerator?.join()
+        jobGenerator = null
+        jobCorrector = null
     }
 
     @Test
@@ -184,16 +190,5 @@ class RouteTests {
         }
     }
 
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun stopCor(): Unit {
-            runBlocking {
-                jobCorrector?.cancel()
-                jobCorrector?.join()
-                jobGenerator?.cancel()
-                jobGenerator?.join()
-            }
-        }
-    }
+
 }
