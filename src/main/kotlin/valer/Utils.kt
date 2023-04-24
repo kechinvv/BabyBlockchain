@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 object Utils {
     private val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-    private val client = HttpClient(CIO)
+    var client = HttpClient(CIO)
 
     fun randomStr(): String {
         val randomString = (1..256)
@@ -46,8 +46,7 @@ object Utils {
         }
     }
 
-
-    private fun jsonToBlock(json: JsonObject): Blockchain.Block {
+    fun jsonToBlock(json: JsonObject): Blockchain.Block {
         return Blockchain.Block(
             json.get("index").asInt,
             json.get("prev_hash").asString,

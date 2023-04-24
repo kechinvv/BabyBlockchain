@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Blockchain</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">valer</a>
+</div>
+
+<h1>Coverage Summary for Class: Blockchain (valer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Blockchain</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Blockchain$Block</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (33/33)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Blockchain$Block$setValidHash$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Blockchain$createAddDistribute$1</td>
+  </tr>
+  <tr>
+    <td class="name">Blockchain$createBlock$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (60/60)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package valer
+&nbsp;
+&nbsp;import com.google.common.hash.Hashing
+&nbsp;import kotlinx.coroutines.*
+&nbsp;import kotlinx.serialization.Serializable
+&nbsp;import valer.Utils.randomStr
+&nbsp;import java.lang.IllegalArgumentException
+&nbsp;import java.util.LinkedList
+&nbsp;import kotlin.random.Random
+&nbsp;
+&nbsp;object Blockchain {
+<b class="fc">&nbsp;    var chain = ArrayDeque&lt;Block&gt;()</b>
+<b class="fc">&nbsp;    var mode = &quot;0&quot;</b>
+&nbsp;    /* 0 - ++
+&nbsp;    *  1 - --
+&nbsp;    *  other - random
+&nbsp;    *
+&nbsp;    * */
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    data class Block(</b>
+<b class="fc">&nbsp;        var index: Int,</b>
+<b class="fc">&nbsp;        val prev_hash: String,</b>
+<b class="fc">&nbsp;        val data: String,</b>
+<b class="fc">&nbsp;        var nonce: Int? = null,</b>
+<b class="fc">&nbsp;        var hash: String? = null</b>
+&nbsp;    ) {
+<b class="fc">&nbsp;        private val mainStr = index.toString() + prev_hash + data</b>
+&nbsp;
+<b class="fc">&nbsp;        init {</b>
+<b class="fc">&nbsp;            if (hash == null || nonce == null) {</b>
+<b class="fc">&nbsp;                nonce = 0</b>
+<b class="fc">&nbsp;                hash = &quot;1111&quot;</b>
+<b class="fc">&nbsp;            } else verification()</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+&nbsp;
+&nbsp;        suspend fun setValidHash() {
+<b class="fc">&nbsp;            withContext(Dispatchers.Default) {</b>
+<b class="fc">&nbsp;                while (hash!!.takeLast(4) != &quot;0000&quot; &amp;&amp; isActive) {</b>
+<b class="fc">&nbsp;                    nonce = nextNonce(nonce!!)</b>
+<b class="fc">&nbsp;                    hash = calculateHash()</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private fun nextNonce(old_nonce: Int): Int {
+<b class="fc">&nbsp;            return when (mode) {</b>
+<b class="fc">&nbsp;                &quot;0&quot; -&gt; if (old_nonce &lt; Int.MAX_VALUE) (old_nonce + 1) else Int.MIN_VALUE</b>
+<b class="fc">&nbsp;                &quot;1&quot; -&gt; if (old_nonce &gt; Int.MIN_VALUE) (old_nonce - 1) else Int.MAX_VALUE</b>
+<b class="fc">&nbsp;                else -&gt; Random.nextInt()</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        fun verification() {
+<b class="fc">&nbsp;            var hashActual = true</b>
+<b class="fc">&nbsp;            var validIndex = index == 1</b>
+<b class="fc">&nbsp;            if (chain.isNotEmpty()) {</b>
+<b class="fc">&nbsp;                hashActual = prev_hash == chain.last().hash</b>
+<b class="fc">&nbsp;                validIndex = (index - 1) == chain.last().index</b>
+&nbsp;            }
+<b class="fc">&nbsp;            val validHash = (hash!!.takeLast(4) == &quot;0000&quot;) &amp;&amp; (hash == calculateHash())</b>
+<b class="fc">&nbsp;            if (!validHash) throw IllegalHashException()</b>
+<b class="fc">&nbsp;            if (!validIndex) throw IllegalIndexException()</b>
+<b class="fc">&nbsp;            if (!hashActual) throw NotActualBlockException()</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private fun calculateHash(): String {
+<b class="fc">&nbsp;            val hashFunction = Hashing.sha256()</b>
+<b class="fc">&nbsp;            val hc = hashFunction</b>
+<b class="fc">&nbsp;                .newHasher()</b>
+<b class="fc">&nbsp;                .putString(mainStr + nonce.toString(), Charsets.UTF_8)</b>
+<b class="fc">&nbsp;                .hash()</b>
+<b class="fc">&nbsp;            return hc.toString()</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    suspend fun createBlock(): Block = withContext(Dispatchers.Default) {</b>
+<b class="fc">&nbsp;        var index = 1</b>
+<b class="fc">&nbsp;        var prevHash = &quot;&quot;</b>
+<b class="fc">&nbsp;        val data = randomStr()</b>
+&nbsp;
+<b class="fc">&nbsp;        if (chain.isNotEmpty()) {</b>
+<b class="fc">&nbsp;            val lastBlock = chain.last()</b>
+<b class="fc">&nbsp;            index = lastBlock.index + 1</b>
+<b class="fc">&nbsp;            prevHash = lastBlock.hash!!</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        val block = Block(index, prevHash, data)</b>
+<b class="fc">&nbsp;        block.setValidHash()</b>
+<b class="fc">&nbsp;        return@withContext block</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    suspend fun createAddDistribute() {</b>
+<b class="fc">&nbsp;        val newBlock = createBlock()</b>
+<b class="fc">&nbsp;        addBlockToChain(newBlock)</b>
+<b class="fc">&nbsp;        Utils.distributeBlock(newBlock)</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun addBlockToChain(block: Block) {
+<b class="fc">&nbsp;        block.verification()</b>
+<b class="fc">&nbsp;        chain.add(block)</b>
+<b class="fc">&nbsp;        println(&quot;Block &quot; + chain.last().index)</b>
+<b class="fc">&nbsp;        println(&quot;prev_hash = &quot; + chain.last().prev_hash)</b>
+<b class="fc">&nbsp;        println(&quot;hash = &quot; + chain.last().hash)</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-04-22 04:31</div>
+</div>
+</body>
+</html>
